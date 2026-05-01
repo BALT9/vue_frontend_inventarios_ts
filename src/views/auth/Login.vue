@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { loginNest } from '../../services/auth.service';
 
 const credenciales = ref(
     {
@@ -8,11 +9,16 @@ const credenciales = ref(
     }
 );
 
-function funIngresar(){
-    alert("datos")
+async function funIngresar() {
+    try {
+        const res = await loginNest(credenciales.value.email, credenciales.value.password);
+        console.log(res);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-</script>   
+</script>
 
 <template>
     <h1>Login</h1>
@@ -27,4 +33,3 @@ function funIngresar(){
     </form>
     <p>{{ credenciales }}</p>
 </template>
-
