@@ -1,12 +1,15 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import Inicio from "../views/web/Inicio.vue";
 import Servicios from "../views/web/Servicios.vue";
 import Nosotros from "../views/web/Nosotros.vue";
+import Login from "../views/auth/Login.vue";
 
-const routes = [
+// Navegacion con Vue Router 
+
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        component: Inicio
+        component: Inicio,
     },
     {
         path: '/nosotros',
@@ -15,9 +18,13 @@ const routes = [
     {
         path: '/servicios',
         component: Servicios
+    },
+    {
+        path: '/login',
+        component: Login
     }
 
-];
+]; 
 
 const router = createRouter({
     history: createWebHistory(),

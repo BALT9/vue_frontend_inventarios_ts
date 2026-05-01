@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
@@ -9,7 +9,8 @@ import HelloWorld from './components/HelloWorld.vue'
     <RouterLink to="/">Inicio</RouterLink>
     <RouterLink to="/nosotros">Nosotros</RouterLink>
     <RouterLink to="/servicios">Servicios</RouterLink>
-  </nav>
+    <RouterLink to="/login">Login</RouterLink>
+  </nav> 
   <main>
     <RouterView />
   </main>
