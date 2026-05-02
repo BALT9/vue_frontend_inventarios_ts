@@ -4,6 +4,7 @@ import Servicios from "../views/web/Servicios.vue";
 import Nosotros from "../views/web/Nosotros.vue";
 import Login from "../views/auth/Login.vue";
 import Perfil from "../views/admin/Perfil.vue";
+import Users from "../views/admin/users/Users.vue";
 
 // Navegacion con Vue Router 
 
@@ -27,6 +28,10 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/admin/perfil',
         component: Perfil, name: 'Perfil', meta: { requireAuth: true }
+    },
+    {
+        path: '/admin/users',
+        component: Users, name: 'Users', meta: { requireAuth: true }
     }
 
 ];
