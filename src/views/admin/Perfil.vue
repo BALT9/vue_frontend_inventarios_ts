@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { getProfile } from '../../services/auth.service';
+import router from '../../router';
 
 const perfil = ref({})
 
@@ -14,9 +15,15 @@ async function obtenerPerfil() {
     perfil.value = res;
 }
 
+function cerrarSesion(){
+    localStorage.removeItem("access_token")
+    router.push('/login');
+}
+
 </script>
 
 <template>
     <h1>Perfil</h1>
-    <pre>{{ JSON.stringify(perfil, null, 2)}}</pre>
+    <pre>{{ JSON.stringify(perfil, null, 2)}}</pre><br>
+    <button type="button" @click="cerrarSesion()" >Cerrar Sesion</button>
 </template>
