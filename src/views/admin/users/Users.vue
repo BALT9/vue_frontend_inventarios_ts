@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import usersService from '../../../services/users.service';
 import type { UserInterface } from '../../../types/UserInterface';
+import { Button, InputText } from 'primevue';
 
 const users = ref<UserInterface[]>([]);
 
@@ -57,8 +58,8 @@ async function funEditarUser(dataUser: UserInterface) {
     user.value = dataUser;
 }
 
-async function funEliminarUser(dataUser:UserInterface) {
-    if(dataUser.id){
+async function funEliminarUser(dataUser: UserInterface) {
+    if (dataUser.id) {
         const res = await usersService.delete(dataUser.id);
         console.log(res);
         listarUsers();
@@ -76,7 +77,10 @@ onMounted(() => {
     <div>
         <form action="">
             <label for="nom">Ingerese Nombre</label>
-            <input type="text" v-model="user.username">
+            <!-- <input type="text" > -->
+
+            <InputText placeholder="Overridden" class="p-8!" v-model="user.username" />
+
             <br>
             <label for="correo">Ingrese Correo</label>
             <input type="email" v-model="user.email">
@@ -110,10 +114,14 @@ onMounted(() => {
                 <td>
                     <button @click="funEditarUser(u)">Editar</button>
                     <button @click="funEliminarUser(u)">Eliminar</button>
+                    <div class="p-5">
+                        <Button label="Hola PrimeVue" icon="pi pi-check" />
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
+
     <div>
         <pre>
             {{ JSON.stringify(users, null, 2) }}
