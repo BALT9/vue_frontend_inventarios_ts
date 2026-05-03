@@ -11,7 +11,7 @@ const userDataBlank = {
     password: ""
 }
 
-const user = ref<UserInterface>({...userDataBlank});
+const user = ref<UserInterface>({ ...userDataBlank });
 
 async function listarUsers() {
     const { data } = await usersService.index();
@@ -19,10 +19,42 @@ async function listarUsers() {
 }
 
 async function crearUsers() {
-    const { data } = await usersService.store(user.value);
-    console.log("data *******:", data)
-    listarUsers();
-    user.value = {...userDataBlank};
+
+    try {
+        if (user.value.id) {
+            // modificar
+
+            const payload: any = {
+                username: user.value.username,
+                email: user.value.email,
+            };
+
+            // solo enviar password si el usuario escribió uno
+            if (user.value.password) {
+                payload.password = user.value.password;
+            }
+
+            await usersService.update(user.value.id, payload);
+
+            listarUsers();
+            user.value = { ...userDataBlank };
+
+        } else {
+            const { data } = await usersService.store(user.value);
+            console.log("data *******:", data);
+
+            listarUsers();
+            user.value = { ...userDataBlank };
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+async function funEditarUser(dataUser: UserInterface) {
+    console.log(JSON.stringify(dataUser, null, 2));
+    user.value = dataUser;
 }
 
 onMounted(() => {
@@ -68,7 +100,7 @@ onMounted(() => {
                 <td>{{ u.username }}</td>
                 <td>{{ u.email }}</td>
                 <td>
-                    <button>Editar</button>
+                    <button @click="funEditarUser(u)">Editar</button>
                     <button>Eliminar</button>
                 </td>
             </tr>

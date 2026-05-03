@@ -8,13 +8,13 @@ export default {
     store(data: UserInterface) {
         return api.post("/users", data);
     },
-    show(id: number) {
-        return api.get(`/users` + id);
+    show(id: string) {
+        return api.get(`/users/` + id);
     },
-    update(id: number, data: UserInterface) {
-        return api.put(`/users` + id, data);
+    update(id: string, data: UserInterface) {
+        return api.patch(`/users/` + id, data);
     },
-    delete(id: number) {
-        return api.delete(`/users` + id);
+    delete(id: string) {
+        return api.delete(`/users/` + id);
     }
 }
