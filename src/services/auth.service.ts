@@ -8,5 +8,6 @@ export async function loginNest(email:string, password: string) {
 
 export async function getProfile() {
     const res = await api.get("/auth/profile");
+    console.log(res);
     return res.data;
 }
