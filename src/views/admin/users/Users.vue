@@ -57,6 +57,14 @@ async function funEditarUser(dataUser: UserInterface) {
     user.value = dataUser;
 }
 
+async function funEliminarUser(dataUser:UserInterface) {
+    if(dataUser.id){
+        const res = await usersService.delete(dataUser.id);
+        console.log(res);
+        listarUsers();
+    }
+}
+
 onMounted(() => {
     listarUsers();
 })
@@ -95,13 +103,13 @@ onMounted(() => {
             </tr>
         </thead>
         <tbody>
-            <tr v-for="u in users">
+            <tr v-for="u in users" :key="u.id">
                 <td>{{ u.id }}</td>
                 <td>{{ u.username }}</td>
                 <td>{{ u.email }}</td>
                 <td>
                     <button @click="funEditarUser(u)">Editar</button>
-                    <button>Eliminar</button>
+                    <button @click="funEliminarUser(u)">Eliminar</button>
                 </td>
             </tr>
         </tbody>
