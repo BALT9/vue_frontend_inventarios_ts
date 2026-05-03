@@ -73,58 +73,92 @@ onMounted(() => {
 </script>
 
 <template>
-    <h1>Users</h1>
-    <div>
-        <form action="">
-            <label for="nom">Ingerese Nombre</label>
-            <!-- <input type="text" > -->
+    <div class="max-w-6xl mx-auto p-6 space-y-10">
 
-            <InputText placeholder="Overridden" class="p-8!" v-model="user.username" />
+        <!-- TITLE -->
+        <h1 class="text-3xl font-bold text-color">Users</h1>
 
-            <br>
-            <label for="correo">Ingrese Correo</label>
-            <input type="email" v-model="user.email">
-            <br>
-            <label for="password">Ingrese Contraseña</label>
-            <input type="password" v-model="user.password">
-            <br>
-            <button type="button" @click="crearUsers()">Guardar Usuario</button>
-        </form>
-        <br><br>
-        <div>
-            {{ user }}
+        <!-- FORM CARD -->
+        <div class="bg-surface-card shadow-lg rounded-2xl p-6">
+
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div class="flex flex-col gap-2 md:col-span-2">
+                    <label class="text-sm font-medium text-color">Ingrese Nombre</label>
+                    <InputText class="w-full" v-model="user.username" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium text-color">Ingrese Correo</label>
+                    <InputText type="email" class="w-full" v-model="user.email" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-medium text-color">Ingrese Contraseña</label>
+                    <InputText type="password" class="w-full" v-model="user.password" />
+                </div>
+
+                <div class="md:col-span-2">
+                    <Button type="button" label="Guardar Usuario" icon="pi pi-save" class="w-full"
+                        @click="crearUsers()" />
+                </div>
+
+            </form>
         </div>
 
-    </div>
+        <!-- DEBUG (opcional) -->
+        <div class="bg-surface-100 p-4 rounded-xl text-xs overflow-auto">
+            <pre>{{ user }}</pre>
+        </div>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <td>ID</td>
-                <td>NAME</td>
-                <td>CORREO</td>
-                <td>ACCIONES</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="u in users" :key="u.id">
-                <td>{{ u.id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.email }}</td>
-                <td>
-                    <button @click="funEditarUser(u)">Editar</button>
-                    <button @click="funEliminarUser(u)">Eliminar</button>
-                    <div class="p-5">
-                        <Button label="Hola PrimeVue" icon="pi pi-check" />
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- TABLE CARD -->
+        <div class="bg-surface-card shadow-lg rounded-2xl overflow-hidden">
 
-    <div>
-        <pre>
-            {{ JSON.stringify(users, null, 2) }}
-        </pre>
+            <table class="w-full text-sm">
+
+                <!-- HEADER -->
+                <thead class="bg-surface-100 text-color text-xs uppercase">
+                    <tr>
+                        <th class="p-4 text-left">ID</th>
+                        <th class="p-4 text-left">Name</th>
+                        <th class="p-4 text-left">Correo</th>
+                        <th class="p-4 text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <!-- BODY -->
+                <tbody class="divide-y divide-surface-border">
+
+                    <tr v-for="u in users" :key="u.id" class="hover:bg-surface-50 transition">
+
+                        <td class="p-4 font-semibold">{{ u.id }}</td>
+
+                        <td class="p-4">{{ u.username }}</td>
+
+                        <td class="p-4 text-color-secondary">{{ u.email }}</td>
+
+                        <td class="p-4">
+                            <div class="flex gap-2 justify-center">
+
+                                <Button label="Editar" icon="pi pi-pencil" class="p-button-sm p-button-warning"
+                                    @click="funEditarUser(u)" />
+
+                                <Button label="Eliminar" icon="pi pi-trash" class="p-button-sm p-button-danger"
+                                    @click="funEliminarUser(u)" />
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- RAW JSON (debug opcional) -->
+        <div class="bg-surface-100 p-4 rounded-xl text-xs overflow-auto">
+            <pre>{{ JSON.stringify(users, null, 2) }}</pre>
+        </div>
+
     </div>
 </template>

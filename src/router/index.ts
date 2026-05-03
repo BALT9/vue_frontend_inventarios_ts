@@ -1,63 +1,60 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
+
 import Inicio from "../views/web/Inicio.vue";
 import Servicios from "../views/web/Servicios.vue";
 import Nosotros from "../views/web/Nosotros.vue";
 import Login from "../views/auth/Login.vue";
+
 import Perfil from "../views/admin/Perfil.vue";
 import Users from "../views/admin/users/Users.vue";
 
-// Navegacion con Vue Router 
+import AppLayout from "../layout/AppLayout.vue";
 
 const routes: Array<RouteRecordRaw> = [
+
+    // 🌐 PUBLICO (sin layout admin)
     {
-        path: '/',
-        component: Inicio,
+        path: "/",
+        component: Inicio
     },
     {
-        path: '/nosotros',
+        path: "/nosotros",
         component: Nosotros
     },
     {
-        path: '/servicios',
+        path: "/servicios",
         component: Servicios
     },
     {
-        path: '/login',
-        component: Login, name: 'Login', meta: { redirectIfAuth: true }
+        path: "/login",
+        name: "Login",
+        component: Login,
+        meta: { redirectIfAuth: true }
     },
-    {
-        path: '/admin/perfil',
-        component: Perfil, name: 'Perfil', meta: { requireAuth: true }
-    },
-    {
-        path: '/admin/users',
-        component: Users, name: 'Users', meta: { requireAuth: true }
-    }
 
+    // 🔐 ADMIN (con layout Sakai)
+    {
+        path: "/admin",
+        component: AppLayout,
+        meta: { requireAuth: true },
+        children: [
+            {
+                path: "perfil",
+                name: "Perfil",
+                component: Perfil
+            },
+            {
+                path: "users",
+                name: "Users",
+                component: Users
+            }
+        ]
+    }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes: routes
-})
-
-// redirigir al panel si ya estoy logeado
-router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem("access_token");
-
-    if (to.meta.requireAuth) {
-        if (!token) {
-            return next({ name: 'Login' })
-        } else {
-            return next();
-        }
-    }
-
-    if (to.meta.redirectIfAuth && token) {
-        return next({ name: 'Perfil' })
-    }
-
-    return next();
-})
+    routes
+});
 
 export default router;

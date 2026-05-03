@@ -1,4 +1,3 @@
-
 // tailwind.config.js
 import PrimeUI from 'tailwindcss-primeui';
 

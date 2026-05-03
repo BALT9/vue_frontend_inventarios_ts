@@ -1,17 +1,12 @@
 <script setup lang="ts">
-// import HelloWorld from './components/HelloWorld.vue'
+// import AppLayout from './layout/AppLayout.vue';
+// import './assets/layout/layout.scss'
 </script>
 
 <template>
-  <!-- <HelloWorld /> -->
-  <h1>App.vue</h1>
-  <nav>
-    <RouterLink to="/">Inicio</RouterLink>
-    <RouterLink to="/nosotros">Nosotros</RouterLink>
-    <RouterLink to="/servicios">Servicios</RouterLink>
-    <RouterLink to="/login">Login</RouterLink>
-  </nav> 
-  <main>
-    <RouterView />
-  </main>
+  <AppLayout>
+    <router-view />
+  </AppLayout>
 </template>
+
+<style scoped></style>
