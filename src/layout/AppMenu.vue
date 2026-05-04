@@ -9,18 +9,18 @@ const model = ref([
             {
                 label: 'Admin',
                 icon: 'pi pi-fw pi-home',
-                to: '/admin'
+                to: '/admin/perfil'
             }
         ]
     },
     {
-        label: 'UI Components',
-        path: '/uikit',
+        label: 'Perfil',
+        path: '/admin',
         items: [
             {
-                label: 'Form Layout',
+                label: 'Usuarios',
                 icon: 'pi pi-fw pi-id-card',
-                to: '/uikit/formlayout'
+                to: '/admin/users'
             },
             {
                 label: 'Input',
