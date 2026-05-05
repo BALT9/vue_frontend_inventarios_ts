@@ -7,30 +7,36 @@ import Login from "../views/auth/Login.vue";
 
 import Perfil from "../views/admin/Perfil.vue";
 import Users from "../views/admin/users/Users.vue";
+import WebLayout from "../components/WebLayout.vue";
 
 import AppLayout from "../layout/AppLayout.vue";
 
 const routes: Array<RouteRecordRaw> = [
+    {
+        path: '/',
+        component: WebLayout,
+        children: [
+            {
+                path: "/",
+                component: Inicio
+            },
+            {
+                path: "/nosotros",
+                component: Nosotros
+            },
+            {
+                path: "/servicios",
+                component: Servicios
+            },
+            {
+                path: "/login",
+                name: "Login",
+                component: Login,
+                meta: { redirectIfAuth: true }
+            },
+        ]
+    },
 
-    // 🌐 PUBLICO (sin layout admin)
-    {
-        path: "/",
-        component: Inicio
-    },
-    {
-        path: "/nosotros",
-        component: Nosotros
-    },
-    {
-        path: "/servicios",
-        component: Servicios
-    },
-    {
-        path: "/login",
-        name: "Login",
-        component: Login,
-        meta: { redirectIfAuth: true }
-    },
 
     // 🔐 ADMIN (con layout Sakai)
     {
