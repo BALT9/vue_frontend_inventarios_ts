@@ -10,6 +10,8 @@ import Users from "../views/admin/users/Users.vue";
 import WebLayout from "../components/WebLayout.vue";
 
 import AppLayout from "../layout/AppLayout.vue";
+import Categoria from "../views/admin/Inventario/categoria/Categoria.vue";
+import Producto from "../views/admin/Inventario/producto/Producto.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -53,6 +55,16 @@ const routes: Array<RouteRecordRaw> = [
                 path: "users",
                 name: "Users",
                 component: Users
+            },
+            {
+                path: "categoria",
+                name: "Categoria",
+                component: Categoria
+            },
+            {
+                path: "producto",
+                name: "Producto",
+                component: Producto
             }
         ]
     }

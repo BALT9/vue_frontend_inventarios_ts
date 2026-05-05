@@ -22,6 +22,16 @@ const model = ref([
                 icon: 'pi pi-fw pi-id-card',
                 to: '/admin/users'
             },
+            {
+                label: 'Categorias',
+                icon: 'pi pi-fw pi-id-card',
+                to: '/admin/categoria'
+            },
+            {
+                label: 'Productos',
+                icon: 'pi pi-fw pi-id-card',
+                to: '/admin/producto'
+            },
         ]
     },
     {
@@ -52,43 +62,6 @@ const model = ref([
                 icon: 'pi pi-fw pi-globe',
                 to: '/landing'
             },
-            {
-                label: 'Auth',
-                icon: 'pi pi-fw pi-user',
-                path: '/auth',
-                items: [
-                    {
-                        label: 'Login',
-                        icon: 'pi pi-fw pi-sign-in',
-                        to: '/auth/login'
-                    },
-                    {
-                        label: 'Error',
-                        icon: 'pi pi-fw pi-times-circle',
-                        to: '/auth/error'
-                    },
-                    {
-                        label: 'Access Denied',
-                        icon: 'pi pi-fw pi-lock',
-                        to: '/auth/access'
-                    }
-                ]
-            },
-            {
-                label: 'Crud',
-                icon: 'pi pi-fw pi-pencil',
-                to: '/pages/crud'
-            },
-            {
-                label: 'Not Found',
-                icon: 'pi pi-fw pi-exclamation-circle',
-                to: '/pages/notfound'
-            },
-            {
-                label: 'Empty',
-                icon: 'pi pi-fw pi-circle-off',
-                to: '/pages/empty'
-            }
         ]
     },
     {
@@ -168,23 +141,6 @@ const model = ref([
             }
         ]
     },
-    {
-        label: 'Get Started',
-        path: '/start',
-        items: [
-            {
-                label: 'Documentation',
-                icon: 'pi pi-fw pi-book',
-                to: '/start/documentation'
-            },
-            {
-                label: 'View Source',
-                icon: 'pi pi-fw pi-github',
-                url: 'https://github.com/primefaces/sakai-vue',
-                target: '_blank'
-            }
-        ]
-    }
 ]);
 </script>
 

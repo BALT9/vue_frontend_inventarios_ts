@@ -36,7 +36,7 @@ async function funIngresar() {
 
 <template>
     <!-- Contenedor con degradado sutil -->
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-green-50 p-4">
+    <div class="min-h-[80vh] reen flex items-center justify-center bg-gradient-to-br from-slate-50 to-green-50 p-4">
 
         <div class="w-full max-w-md">
             <!-- Tarjeta Principal -->
