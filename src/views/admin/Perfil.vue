@@ -5,8 +5,13 @@ import router from '../../router';
 
 import Card from 'primevue/card';
 import Button from 'primevue/button';
+import type { UserInterface } from '../../types/UserInterface';
 
-const perfil = ref<any>({})
+const perfil = ref<UserInterface>({
+    id: "",
+    username: "",
+    email: ""
+})
 
 onMounted(() => {
     obtenerPerfil()
