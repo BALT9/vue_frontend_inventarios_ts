@@ -3,7 +3,7 @@ import type { ProductoInterface } from '../types/ProductoInterface';
 
 export default {
     async index(page=1, limit=10, buscar="") {
-        return await api.get(`/producto?page=${page}&limit=${limit}&q=${buscar}`);
+        return await api.get(`/producto?page=${page}&limit=${limit}&search=${buscar}`);
     },
     store(data: ProductoInterface) {
         return api.post("/producto", data);

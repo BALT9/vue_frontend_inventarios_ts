@@ -3,7 +3,7 @@
 import { onMounted, ref } from 'vue';
 import productoService from '../../../../services/producto.service';
 import type { ProductoInterface } from '../../../../types/ProductoInterface';
-import { Button, Column, DataTable, Dialog, FileUpload, InputText, Toolbar } from 'primevue';
+import { Button, Column, DataTable, Dialog, FileUpload, IconField, InputIcon, InputText, Toolbar } from 'primevue';
 
 
 const productos = ref<ProductoInterface[]>([]);
@@ -12,16 +12,18 @@ const visible = ref<boolean>(false);
 
 const cargando = ref<boolean>(true);
 const totalRecords = ref<number>(0);
+const buscar = ref<string>("");
 
 const dt = ref();
 
 const lazyParams = ref({
     page: 0,
+    first: 0,
     rows: 10
 });
 
 async function listarProductos() {
-    const res = await productoService.index(lazyParams.value.page + 1, lazyParams.value.rows);
+    const res = await productoService.index(lazyParams.value.page + 1, lazyParams.value.rows, buscar.value);
     productos.value = res.data.data;
     console.log(res.data);
     totalRecords.value = res.data.total;
@@ -83,6 +85,19 @@ const exportCSV = (event: any) => {
         <div class="card">
             <DataTable ref="dt" :value="productos" paginator :rows="10" @page="onPage($event)" lazy :loading="cargando"
                 :totalRecords="totalRecords" :rowsPerPageOptions="[1, 2, 5, 10, 20, 50]" tableStyle="min-width: 50rem">
+
+                <template #header>
+                    <div class="flex flex-wrap gap-2 items-center justify-between">
+                        <h4 class="m-0">Manage Products</h4>
+                        <IconField>
+                            <InputIcon>
+                                <i class="pi pi-search" />
+                            </InputIcon>
+                            <InputText v-model="buscar" placeholder="Search..." @keyup.enter="listarProductos()" />
+                        </IconField>
+                    </div>
+                </template>
+
                 <Column field="nombre" header="Name" style="width: 25%"></Column>
                 <Column field="descripcion" header="Country" style="width: 25%"></Column>
                 <Column field="precio_venta_actual" header="Company" style="width: 25%"></Column>
