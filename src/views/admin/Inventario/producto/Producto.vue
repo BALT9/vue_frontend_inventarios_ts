@@ -3,10 +3,24 @@
 import { onMounted, ref } from 'vue';
 import productoService from '../../../../services/producto.service';
 import type { ProductoInterface } from '../../../../types/ProductoInterface';
-import { Button, Column, DataTable, Dialog, FileUpload, IconField, InputIcon, InputText, Toolbar } from 'primevue';
+import { Button, Column, DataTable, Dialog, Dropdown, FileUpload, IconField, InputIcon, InputText, Toolbar } from 'primevue';
+import categoriaService from '../../../../services/categoria.service';
 
 
 const productos = ref<ProductoInterface[]>([]);
+
+const producto = ref<ProductoInterface>({
+    nombre: '',
+    descripcion: '',
+    unidad_medida: '',
+    marca: '',
+    precio_venta_actual: "",
+    imagen: '',
+    estado: true,
+    categoria: 0
+});
+
+const categorias = ref<any[]>([]);
 
 const visible = ref<boolean>(false);
 
@@ -30,8 +44,16 @@ async function listarProductos() {
     cargando.value = false;
 }
 
+async function listarCategorias() {
+    const res = await categoriaService.index();
+    categorias.value = res.data;
+
+    console.log(JSON.stringify(categorias.value, null, 2));
+}
+
 onMounted(() => {
     listarProductos();
+    listarCategorias();
 })
 
 const onPage = (event: any) => {
@@ -44,35 +66,99 @@ const exportCSV = (event: any) => {
 };
 
 
+async function guardarProducto() {
+    const res = await productoService.store(producto.value);
+    console.log(res.data);
+    visible.value = false;
+    listarProductos();
+}
+
 </script>
 
 <template>
     <h1>productos</h1>
 
-    <div class="card flex justify-center">
-        <Button label="Crear Producto" @click="visible = true" />
-        <Dialog v-model:visible="visible" modal header="Crear Categoria" :style="{ width: '25rem' }">
-            <span class="text-surface-500 dark:text-surface-400 block mb-8">Categoria</span>
-            <div class="flex items-center gap-4 mb-4">
-                <label for="nombre" class="font-semibold w-24">Nombre</label>
-                <InputText id="nombre" class="flex-auto" autocomplete="off" />
+    <div class="flex justify-center">
+        <Dialog v-model:visible="visible" modal header="Crear Producto" :style="{ width: '35rem' }">
+
+            <div class="flex flex-col gap-4">
+
+                <div class="flex items-center gap-4">
+                    <label for="nombre" class="font-semibold w-40">
+                        Nombre
+                    </label>
+
+                    <InputText id="nombre" v-model="producto.nombre" class="flex-auto" autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="descripcion" class="font-semibold w-40">
+                        Descripción
+                    </label>
+
+                    <InputText id="descripcion" v-model="producto.descripcion" class="flex-auto" autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="unidad_medida" class="font-semibold w-40">
+                        Unidad
+                    </label>
+
+                    <InputText id="unidad_medida" v-model="producto.unidad_medida" class="flex-auto"
+                        autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="marca" class="font-semibold w-40">
+                        Marca
+                    </label>
+
+                    <InputText id="marca" v-model="producto.marca" class="flex-auto" autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="precio" class="font-semibold w-40">
+                        Precio
+                    </label>
+
+                    <InputText id="precio" v-model="producto.precio_venta_actual" type="number" class="flex-auto" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="imagen" class="font-semibold w-40">
+                        Imagen
+                    </label>
+
+                    <InputText id="imagen" v-model="producto.imagen" class="flex-auto" autocomplete="off" />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <label for="categoria" class="font-semibold w-40">
+                        Categoria
+                    </label>
+
+                    <Dropdown v-model="producto.categoria" :options="categorias" optionLabel="nombre" optionValue="id"
+                        placeholder="Selecciona categoría" />
+                </div>
+
             </div>
-            <div class="flex items-center gap-4 mb-8">
-                <label for="descripcion" class="font-semibold w-24">Descripcion</label>
-                <InputText id="descripcion" class="flex-auto" autocomplete="off" />
-            </div>
-            <div class="flex justify-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Save" @click=""></Button>
-            </div>
-            <!-- {{ categoria }} -->
+
+            <template #footer>
+                <div class="flex justify-end gap-2">
+                    <Button type="button" label="Cancelar" severity="secondary" @click="visible = false" />
+
+                    <Button type="button" label="Guardar" @click="guardarProducto()" />
+                </div>
+            </template>
+
+            <pre>{{ producto }}</pre>
         </Dialog>
     </div>
 
     <div class="card">
         <Toolbar class="mb-6">
             <template #start>
-                <Button label="New" icon="pi pi-plus" class="mr-2" @click="" />
+                <Button label="Agregar Producto" icon="pi pi-plus" class="mr-2" @click="visible = true" />
             </template>
 
             <template #end>
@@ -102,6 +188,18 @@ const exportCSV = (event: any) => {
                 <Column field="descripcion" header="Country" style="width: 25%"></Column>
                 <Column field="precio_venta_actual" header="Company" style="width: 25%"></Column>
                 <Column field="marca" header="Marca" style="width: 25%"></Column>
+                <Column header="Imagen" style="width: 25%">
+                    <template #body="{ data }">
+                        <img :src="data.imagen" alt="producto"
+                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
+                    </template>
+                </Column>
+                <Column :exportable="false" style="min-width: 12rem" header="Acciones">
+                    <template #body="slotProps">
+                        <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2" @click="" />
+                        <Button icon="pi pi-trash" variant="outlined" rounded severity="danger" @click="" />
+                    </template>
+                </Column>
             </DataTable>
         </div>
     </div>
