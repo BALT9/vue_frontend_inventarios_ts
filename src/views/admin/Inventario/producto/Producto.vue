@@ -9,7 +9,7 @@ import categoriaService from '../../../../services/categoria.service';
 
 const productos = ref<ProductoInterface[]>([]);
 
-const producto = ref<ProductoInterface>({
+const productoDataBlank = {
     nombre: '',
     descripcion: '',
     unidad_medida: '',
@@ -18,7 +18,9 @@ const producto = ref<ProductoInterface>({
     imagen: '',
     estado: true,
     categoria: 0
-});
+}
+
+const producto = ref<ProductoInterface>(productoDataBlank);
 
 const categorias = ref<any[]>([]);
 
@@ -67,11 +69,47 @@ const exportCSV = (event: any) => {
 
 
 async function guardarProducto() {
-    const res = await productoService.store(producto.value);
-    console.log(res.data);
-    visible.value = false;
-    listarProductos();
+    try {
+        if (producto.value.id) {
+
+            const payload: ProductoInterface = {
+                nombre: producto.value.nombre,
+                descripcion: producto.value.descripcion,
+                unidad_medida: producto.value.unidad_medida,
+                marca: producto.value.marca,
+                precio_venta_actual: producto.value.precio_venta_actual,
+                imagen: producto.value.imagen,
+                estado: producto.value.estado,
+                categoria: producto.value.categoria
+            }
+
+            const res = await productoService.update(producto.value.id, payload);
+            console.log(res.data);
+            visible.value = false;
+            producto.value = productoDataBlank;
+        } else {
+            const res = await productoService.store(producto.value);
+            console.log(res.data);
+            visible.value = false;
+            listarProductos();
+        }
+    } catch (error) {
+
+    }
 }
+
+async function editarProducto(dataProducto: ProductoInterface) {
+    visible.value = true;
+    producto.value = dataProducto;
+}
+
+async function eliminarProducto(dataProducto: ProductoInterface) {
+    if(dataProducto.id){
+        await productoService.delete(dataProducto.id);
+        listarProductos();
+    }
+}
+
 
 </script>
 
@@ -196,8 +234,9 @@ async function guardarProducto() {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="Acciones">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2" @click="" />
-                        <Button icon="pi pi-trash" variant="outlined" rounded severity="danger" @click="" />
+                        <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2"
+                            @click="editarProducto(slotProps.data)" />
+                        <Button icon="pi pi-trash" variant="outlined" rounded severity="danger" @click="eliminarProducto(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>
