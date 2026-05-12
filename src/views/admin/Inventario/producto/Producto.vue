@@ -132,13 +132,11 @@ const getImageUrl = (imagen: string) => {
 
     if (!imagen) return '';
 
-    // Si ya es URL externa, la devolvemos tal cual
     if (imagen.startsWith('http')) {
         return imagen;
     }
 
-    // Si es archivo local
-    return `http://localhost:3000/${imagen.replace(/\\/g, '/')}`;
+    return `http://localhost:3000/uploads/${encodeURIComponent(imagen)}`;
 };
 
 
