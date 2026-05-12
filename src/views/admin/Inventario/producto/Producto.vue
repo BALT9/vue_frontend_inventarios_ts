@@ -70,6 +70,7 @@ const onPage = (event: any) => {
 }
 
 const exportCSV = (event: any) => {
+    console.log(event);
     dt.value.exportCSV();
 };
 
@@ -124,7 +125,7 @@ const onFileSelect = async (event: any) => {
 
     if (producto.value.id) {
         const { data } = await productoService.actualizaImagen(producto.value.id, formData);
-
+        console.log(data);
     }
 
     // visible.value = false;
