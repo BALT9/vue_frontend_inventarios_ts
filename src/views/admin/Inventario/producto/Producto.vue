@@ -6,6 +6,10 @@ import type { ProductoInterface } from '../../../../types/ProductoInterface';
 import { Button, Column, DataTable, Dialog, Dropdown, FileUpload, IconField, InputIcon, InputText, Toolbar } from 'primevue';
 import categoriaService from '../../../../services/categoria.service';
 
+// manejo de estados con pinia 
+import { useCounterStore } from '../../../../stores/counter';
+// habilitador de manejo de estados con pinia 
+const counter = useCounterStore()
 
 const productos = ref<ProductoInterface[]>([]);
 
@@ -282,7 +286,10 @@ const getImageUrl = (imagen: string) => {
             </DataTable>
         </div>
     </div>
-
+    <div>
+        <p>{{ counter.contador }}</p>
+        <button @click="counter.incrementar">Incrementar +</button>
+    </div>
 
     <pre>{{ JSON.stringify(productos, null, 2) }}</pre>
 </template>

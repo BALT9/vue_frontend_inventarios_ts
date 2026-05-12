@@ -7,6 +7,11 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import type { UserInterface } from '../../types/UserInterface';
 
+// importar pinia counter 
+import { useCounterStore } from '../../stores/counter';
+
+const counter = useCounterStore()
+
 const perfil = ref<UserInterface>({
     id: "",
     username: "",
@@ -57,6 +62,10 @@ function cerrarSesion() {
                     <div>
                         <span class="font-semibold">ID:</span>
                         <span class="ml-2">{{ perfil?.id }}</span>
+                    </div>
+                    <div>
+                        <p>{{ counter.contador }}</p>
+                        <button @click="counter.incrementar">Incrementar +</button>
                     </div>
 
                 </div>

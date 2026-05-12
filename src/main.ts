@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import './style.css'
 
+import { createPinia } from 'pinia'
+
 import Aura from '@primeuix/themes/aura';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -12,6 +14,10 @@ import '@/assets/tailwind.css';
 import '@/assets/styles.scss';
 
 const app = createApp(App)
+
+const pinia = createPinia() // 🔥 crear instancia
+
+app.use(pinia) // 🔥 activar Pinia
 
 app.use(router)
 
