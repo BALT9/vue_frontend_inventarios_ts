@@ -30,6 +30,8 @@ const cargando = ref<boolean>(true);
 const totalRecords = ref<number>(0);
 const buscar = ref<string>("");
 
+const imagenSeleccionada = ref();
+
 const dt = ref();
 
 const lazyParams = ref({
@@ -104,11 +106,40 @@ async function editarProducto(dataProducto: ProductoInterface) {
 }
 
 async function eliminarProducto(dataProducto: ProductoInterface) {
-    if(dataProducto.id){
+    if (dataProducto.id) {
         await productoService.delete(dataProducto.id);
         listarProductos();
     }
 }
+
+const onFileSelect = async (event: any) => {
+    imagenSeleccionada.value = event.files[0];
+
+    const formData = new FormData();
+    formData.append("imagen", imagenSeleccionada.value);
+
+    if (producto.value.id) {
+        const { data } = await productoService.actualizaImagen(producto.value.id, formData);
+
+    }
+
+    // visible.value = false;
+
+    listarProductos();
+}
+
+const getImageUrl = (imagen: string) => {
+
+    if (!imagen) return '';
+
+    // Si ya es URL externa, la devolvemos tal cual
+    if (imagen.startsWith('http')) {
+        return imagen;
+    }
+
+    // Si es archivo local
+    return `http://localhost:3000/${imagen.replace(/\\/g, '/')}`;
+};
 
 
 </script>
@@ -170,6 +201,16 @@ async function eliminarProducto(dataProducto: ProductoInterface) {
                     <InputText id="imagen" v-model="producto.imagen" class="flex-auto" autocomplete="off" />
                 </div>
 
+                <div>
+                    <!-- onAdvancedUpload($event) -->
+                    <FileUpload name="demo[]" customUpload @select="onFileSelect" :multiple="false" accept="image/*"
+                        :maxFileSize="1000000">
+                        <template #empty>
+                            <span>Drag and drop files to here to upload.</span>
+                        </template>
+                    </FileUpload>
+                </div>
+
                 <div class="flex items-center gap-4">
                     <label for="categoria" class="font-semibold w-40">
                         Categoria
@@ -228,7 +269,7 @@ async function eliminarProducto(dataProducto: ProductoInterface) {
                 <Column field="marca" header="Marca" style="width: 25%"></Column>
                 <Column header="Imagen" style="width: 25%">
                     <template #body="{ data }">
-                        <img :src="data.imagen" alt="producto"
+                        <img :src="getImageUrl(data.imagen)" alt="producto"
                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
                     </template>
                 </Column>
@@ -236,7 +277,8 @@ async function eliminarProducto(dataProducto: ProductoInterface) {
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2"
                             @click="editarProducto(slotProps.data)" />
-                        <Button icon="pi pi-trash" variant="outlined" rounded severity="danger" @click="eliminarProducto(slotProps.data)" />
+                        <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
+                            @click="eliminarProducto(slotProps.data)" />
                     </template>
                 </Column>
             </DataTable>
