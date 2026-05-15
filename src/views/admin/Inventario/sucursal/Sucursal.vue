@@ -2,17 +2,17 @@
 import { onMounted, ref } from 'vue';
 import sucursalService from '../../../../services/sucursal.service';
 import type { SucursalInterface } from '../../../../types/SucursalInterface';
-import { Button, Dialog, InputText } from 'primevue';
+import { Button, Column, DataTable, Dialog, InputText } from 'primevue';
 
 const sucursales = ref<SucursalInterface[]>([]);
 
-const sucursalDataBlank : SucursalInterface = {
+const sucursalDataBlank: SucursalInterface = {
     nombre: "",
     direccion: "",
     ciudad: ""
 }
 
-const sucursal = ref<SucursalInterface>({...sucursalDataBlank});
+const sucursal = ref<SucursalInterface>({ ...sucursalDataBlank });
 
 const visible = ref<boolean>(false);
 
@@ -23,11 +23,43 @@ async function funListarSucursal() {
 }
 
 async function funGuardarSucursal() {
-    const res = await sucursalService.store(sucursal.value);
-    console.log(res);
-    sucursal.value = { ...sucursalDataBlank };
-    visible.value = false;
-    funListarSucursal();
+    try {
+        if (sucursal.value.id) {
+            const payload: SucursalInterface = {
+                nombre: sucursal.value.nombre,
+                direccion: sucursal.value.direccion,
+                ciudad: sucursal.value.ciudad
+            }
+
+            const res = await sucursalService.update(sucursal.value.id, payload);
+            console.log(res.data);
+            // listarCategorias();
+            visible.value = false;
+
+        } else {
+            const res = await sucursalService.store(sucursal.value);
+            console.log(res);
+            sucursal.value = { ...sucursalDataBlank };
+            visible.value = false;
+            funListarSucursal();
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+function editarSucursal(dataSucursal: SucursalInterface) {
+    visible.value = true;
+    sucursal.value = dataSucursal;
+}
+
+async function eliminarSucursal(sucursal: SucursalInterface) {
+    if (sucursal.id) {
+        await sucursalService.delete(sucursal.id);
+        funListarSucursal();
+    }
 }
 
 onMounted(() => {
@@ -63,7 +95,24 @@ onMounted(() => {
         </Dialog>
     </div>
 
+    <div class="card">
+        <DataTable :value="sucursales" tableStyle="min-width: 50rem">
+            <Column field="id" header="id"></Column>
+            <Column field="nombre" header="Nombre"></Column>
+            <Column field="direccion" header="Direccion"></Column>
+            <Column field="ciudad" header="Ciudad"></Column>
+            <Column :exportable="false" style="min-width: 12rem" header="Acciones">
+                <template #body="slotProps">
+                    <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2"
+                        @click="editarSucursal(slotProps.data)" />
+                    <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
+                        @click="eliminarSucursal(slotProps.data)" />
+                </template>
+            </Column>
+        </DataTable>
+    </div>
+
     <pre>
-        {{ JSON.stringify(sucursales, null, 2) }}
-    </pre>
+    {{ JSON.stringify(sucursales, null, 2) }}
+</pre>
 </template>
