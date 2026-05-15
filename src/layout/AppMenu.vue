@@ -37,6 +37,11 @@ const model = ref([
                 icon: 'pi pi-fw pi-id-card',
                 to: '/admin/sucursal'
             },
+            {
+                label: 'Almacen',
+                icon: 'pi pi-fw pi-id-card',
+                to: '/admin/almacen'
+            },
         ]
     },
     {
