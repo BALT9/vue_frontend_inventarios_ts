@@ -12,6 +12,7 @@ import WebLayout from "../components/WebLayout.vue";
 import AppLayout from "../layout/AppLayout.vue";
 import Categoria from "../views/admin/Inventario/categoria/Categoria.vue";
 import Producto from "../views/admin/Inventario/producto/Producto.vue";
+import Sucursal from "../views/admin/Inventario/sucursal/Sucursal.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -65,6 +66,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: "producto",
                 name: "Producto",
                 component: Producto
+            },
+            {
+                path: "sucursal",
+                name: "Sucursal",
+                component: Sucursal
             }
         ]
     }
