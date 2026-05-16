@@ -2,7 +2,7 @@
 
 import { onMounted, ref } from 'vue';
 import type { ProductoInterface } from '../../../../types/ProductoInterface';
-import { Column, DataTable, Dropdown, IconField, InputIcon, InputText } from 'primevue';
+import { Button, Column, DataTable, Dropdown, IconField, InputIcon, InputText } from 'primevue';
 import productoService from '../../../../services/producto.service';
 import sucursalService from '../../../../services/sucursal.service';
 import almacenService from '../../../../services/almacen.service';
@@ -14,7 +14,7 @@ const productos = ref<ProductoInterface[]>([]);
 const cargando = ref<boolean>(true);
 const totalRecords = ref<number>(0);
 const buscar = ref<string>("");
-const dt = ref();
+// const dt = ref();
 
 // estados de filtro 
 const sucursales = ref<any[]>([]);
@@ -148,14 +148,14 @@ const productosFiltrados = computed(() => {
                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
                         </template>
                     </Column>
-                    <!-- <Column :exportable="false" style="min-width: 12rem" header="Acciones">
-                            <template #body="slotProps">
-                                <Button icon="pi pi-pencil" variant="outlined" rounded class="mr-2"
-                                    @click="editarProducto(slotProps.data)" />
-                                <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
-                                    @click="eliminarProducto(slotProps.data)" />
-                            </template>
-                        </Column> -->
+                    <Column :exportable="false" style="min-width: 12rem" header="Acciones">
+                        <template #body="slotProps">
+                            <div class="flex gap-1">
+                                <Button icon="pi pi-minus" rounded severity="warn" />
+                                <Button icon="pi pi-plus" rounded severity="info" />
+                            </div>
+                        </template>
+                    </Column>
                 </DataTable>
 
             </div>
