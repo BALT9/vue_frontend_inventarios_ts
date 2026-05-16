@@ -6,6 +6,11 @@ import type { ProductoInterface } from '../../../../types/ProductoInterface';
 import { Button, Column, DataTable, Dialog, Dropdown, FileUpload, IconField, InputIcon, InputText, Toolbar } from 'primevue';
 import categoriaService from '../../../../services/categoria.service';
 
+import { computed } from 'vue';
+
+import almacenService from '../../../../services/almacen.service';
+import sucursalService from '../../../../services/sucursal.service';
+
 // manejo de estados con pinia 
 import { useCounterStore } from '../../../../stores/counter';
 // habilitador de manejo de estados con pinia 
@@ -29,6 +34,12 @@ const producto = ref<ProductoInterface>(productoDataBlank);
 const categorias = ref<any[]>([]);
 
 const visible = ref<boolean>(false);
+
+const sucursales = ref<any[]>([]);
+const almacenes = ref<any[]>([]);
+
+const filtroSucursal = ref<number | null>(null);
+const filtroAlmacen = ref<number | null>(null);
 
 const cargando = ref<boolean>(true);
 const totalRecords = ref<number>(0);
@@ -62,6 +73,9 @@ async function listarCategorias() {
 onMounted(() => {
     listarProductos();
     listarCategorias();
+
+    listarSucursales();
+    listarAlmacenes();
 })
 
 const onPage = (event: any) => {
@@ -73,6 +87,16 @@ const exportCSV = (event: any) => {
     console.log(event);
     dt.value.exportCSV();
 };
+
+async function listarSucursales() {
+    const res = await sucursalService.index();
+    sucursales.value = res.data;
+}
+
+async function listarAlmacenes() {
+    const res = await almacenService.index();
+    almacenes.value = res.data;
+}
 
 
 async function guardarProducto() {
@@ -132,6 +156,37 @@ const onFileSelect = async (event: any) => {
 
     listarProductos();
 }
+
+const almacenesFiltrados = computed(() => {
+
+    if (!filtroSucursal.value) {
+        return almacenes.value;
+    }
+
+    return almacenes.value.filter((almacen: any) => {
+
+        if (typeof almacen.sucursal === 'object') {
+            return almacen.sucursal.id == filtroSucursal.value;
+        }
+
+        return almacen.sucursal == filtroSucursal.value;
+    });
+});
+
+const productosFiltrados = computed(() => {
+
+    if (!filtroAlmacen.value) {
+        return productos.value;
+    }
+
+    return productos.value.filter((producto: any) => {
+
+        return producto.almacenes?.some((item: any) => {
+
+            return item.almacen.id == filtroAlmacen.value;
+        });
+    });
+});
 
 const getImageUrl = (imagen: string) => {
 
@@ -251,8 +306,20 @@ const getImageUrl = (imagen: string) => {
         </Toolbar>
 
         <div class="card">
-            <DataTable ref="dt" :value="productos" paginator :rows="10" @page="onPage($event)" lazy :loading="cargando"
-                :totalRecords="totalRecords" :rowsPerPageOptions="[1, 2, 5, 10, 20, 50]" tableStyle="min-width: 50rem">
+            <div class="flex gap-2 mb-4">
+
+                <!-- SUCURSAL -->
+                <Dropdown v-model="filtroSucursal" :options="sucursales" optionLabel="nombre" optionValue="id"
+                    placeholder="Filtrar por sucursal" class="w-64" showClear />
+
+                <!-- ALMACEN -->
+                <Dropdown v-model="filtroAlmacen" :options="almacenesFiltrados" optionLabel="nombre" optionValue="id"
+                    placeholder="Filtrar por almacén" class="w-64" showClear />
+
+            </div>
+            <DataTable ref="dt" :value="productosFiltrados" paginator :rows="10" @page="onPage($event)" lazy
+                :loading="cargando" :totalRecords="totalRecords" :rowsPerPageOptions="[1, 2, 5, 10, 20, 50]"
+                tableStyle="min-width: 50rem">
 
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
