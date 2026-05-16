@@ -45,21 +45,20 @@ const model = ref([
         ]
     },
     {
-        label: 'Prime Blocks',
+        label: 'Compra-Venta',
         icon: 'pi pi-fw pi-prime',
-        path: '/blocks',
+        path: '/admin',
         items: [
             {
-                label: 'Free Blocks',
+                label: 'Venta',
                 icon: 'pi pi-fw pi-eye',
-                to: '/blocks/free'
+                to: '/admin/notas/nueva-venta'
             },
             {
-                label: 'All Blocks',
-                icon: 'pi pi-fw pi-globe',
-                url: 'https://blocks.primevue.org/',
-                target: '_blank'
-            }
+                label: 'Compra',
+                icon: 'pi pi-fw pi-eye',
+                to: '/admin/notas/nueva-compra'
+            },
         ]
     },
     {
