@@ -191,6 +191,18 @@ function seleccionarCliente(cliente: ClienteInterface) {
     clienteSeleccionado.value = cliente;
 }
 
+const total = computed(() => {
+
+    return carrito.value.reduce((acc, item) => {
+
+        return acc + (
+            item.cantidad * parseFloat(item.precio_venta_actual)
+        );
+
+    }, 0);
+
+});
+
 </script>
 
 <template>
@@ -368,7 +380,7 @@ function seleccionarCliente(cliente: ClienteInterface) {
 
                 <div class="flex justify-between mb-3">
                     <span>Total</span>
-                    <strong>0.00 Bs</strong>
+                    <strong>{{ total.toFixed(2) }} Bs</strong>
                 </div>
 
                 <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
