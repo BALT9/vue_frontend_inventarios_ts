@@ -30,6 +30,7 @@ const carrito = ref<any[]>([]);
 const visibleCliente = ref<boolean>(false);
 
 const clientes = ref<ClienteInterface[]>([]);
+const clienteSeleccionado = ref<ClienteInterface | null>(null);
 
 const clienteForm = ref<ClienteInterface>({
     tipo: 'cliente',
@@ -186,6 +187,10 @@ const clientesFiltrados = computed(() => {
 
 });
 
+function seleccionarCliente(cliente: ClienteInterface) {
+    clienteSeleccionado.value = cliente;
+}
+
 </script>
 
 <template>
@@ -282,6 +287,22 @@ const clientesFiltrados = computed(() => {
 
                     <Button icon="pi pi-plus" label="Nuevo" size="small" @click="visibleCliente = true" />
 
+                    <div v-if="clienteSeleccionado" class="mb-3 p-2 border rounded bg-green-50">
+
+                        <div class="font-semibold">
+                            {{ clienteSeleccionado.razon_social }}
+                        </div>
+
+                        <div class="text-sm text-gray-600">
+                            {{ clienteSeleccionado.identificacion }}
+                        </div>
+
+                        <div class="text-sm text-gray-600">
+                            {{ clienteSeleccionado.telefono }}
+                        </div>
+
+                    </div>
+
                 </div>
                 <Dialog v-model:visible="visibleCliente" modal header="Nuevo Cliente" :style="{ width: '35rem' }">
 
@@ -332,6 +353,8 @@ const clientesFiltrados = computed(() => {
                     <!-- <Column field="precio_venta_actual" header="Precio"></Column> -->
                     <Column :exportable="false" style="min-width: 12rem" header="Acciones">
                         <template #body="slotProps">
+                            <Button icon="pi pi-plus" rounded severity="info"
+                                @click="seleccionarCliente(slotProps.data)" />
                             <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
                                 @click="eliminarProducto(slotProps.data)" />
                         </template>
