@@ -2,11 +2,13 @@
 
 import { onMounted, ref } from 'vue';
 import type { ProductoInterface } from '../../../../types/ProductoInterface';
-import { Button, Column, DataTable, Dropdown, IconField, InputIcon, InputText } from 'primevue';
+import { Button, Column, DataTable, Dialog, Dropdown, IconField, InputIcon, InputText } from 'primevue';
 import productoService from '../../../../services/producto.service';
 import sucursalService from '../../../../services/sucursal.service';
 import almacenService from '../../../../services/almacen.service';
+import clienteProveedorService from '../../../../services/cliente-proveedor.service';
 import { computed } from 'vue';
+import type { ClienteInterface } from '../../../../types/Cliente-ProovedorInterface';
 
 
 const productos = ref<ProductoInterface[]>([]);
@@ -22,6 +24,22 @@ const almacenes = ref<any[]>([]);
 
 const filtroSucursal = ref<number | null>(null);
 const filtroAlmacen = ref<number | null>(null);
+
+const carrito = ref<any[]>([]);
+
+const visibleCliente = ref<boolean>(false);
+
+const clientes = ref<ClienteInterface[]>([]);
+
+const clienteForm = ref<ClienteInterface>({
+    tipo: 'cliente',
+    razon_social: '',
+    identificacion: '',
+    telefono: '',
+    direccion: '',
+    correo: '',
+    estado: true
+});
 
 const lazyParams = ref({
     page: 0,
@@ -63,10 +81,16 @@ async function listarAlmacenes() {
     almacenes.value = res.data;
 }
 
+async function listarClientes() {
+    const res = await clienteProveedorService.index();
+    clientes.value = res.data;
+}
+
 onMounted(() => {
     listarProductos();
     listarSucursales();
     listarAlmacenes();
+    listarClientes();
 })
 
 const almacenesFiltrados = computed(() => {
@@ -97,6 +121,69 @@ const productosFiltrados = computed(() => {
             return item.almacen.id == filtroAlmacen.value;
         });
     });
+});
+
+function agregarProducto(prod: any) {
+
+    // buscar producto en carrito
+    const existe = carrito.value.find(item => item.id === prod.id);
+
+    // buscar stock del almacén seleccionado
+    const almacenSeleccionado = prod.almacenes.find((a: any) => {
+        return a.almacen.id == filtroAlmacen.value;
+    });
+
+    // si no hay filtro usar primer almacén
+    const stock = almacenSeleccionado
+        ? almacenSeleccionado.cantidad_actual
+        : prod.almacenes[0]?.cantidad_actual || 0;
+
+    if (existe) {
+
+        if (existe.cantidad < stock) {
+            existe.cantidad++;
+        } else {
+            alert("Stock máximo alcanzado");
+        }
+
+    } else {
+
+        if (stock > 0) {
+
+            carrito.value.push({
+                ...prod,
+                cantidad: 1
+            });
+
+        } else {
+            alert("Producto sin stock");
+        }
+
+    }
+}
+
+function eliminarProducto(prod: any) {
+    carrito.value = carrito.value.filter(
+        item => item.id !== prod.id
+    );
+}
+
+function guardarCliente() {
+
+    const res = clienteProveedorService.store(clienteForm.value);
+    console.log(res);
+    listarClientes();
+
+    visibleCliente.value = false;
+
+}
+
+const clientesFiltrados = computed(() => {
+
+    return clientes.value.filter(cliente =>
+        cliente.tipo === 'cliente'
+    );
+
 });
 
 </script>
@@ -140,7 +227,7 @@ const productosFiltrados = computed(() => {
 
                     <Column field="nombre" header="Name" style="width: 25%"></Column>
                     <!-- <Column field="descripcion" header="Country" style="width: 25%"></Column> -->
-                    <Column field="precio_venta_actual" header="Company" style="width: 25%"></Column>
+                    <Column field="precio_venta_actual" header="Precio" style="width: 25%"></Column>
                     <Column field="marca" header="Marca" style="width: 25%"></Column>
                     <Column header="Imagen" style="width: 25%">
                         <template #body="{ data }">
@@ -152,7 +239,8 @@ const productosFiltrados = computed(() => {
                         <template #body="slotProps">
                             <div class="flex gap-1">
                                 <Button icon="pi pi-minus" rounded severity="warn" />
-                                <Button icon="pi pi-plus" rounded severity="info" />
+                                <Button icon="pi pi-plus" rounded severity="info"
+                                    @click="agregarProducto(slotProps.data)" />
                             </div>
                         </template>
                     </Column>
@@ -170,18 +258,85 @@ const productosFiltrados = computed(() => {
 
                 <h2 class="text-lg font-semibold mb-3">Carrito</h2>
 
-                <div class="border-b py-2">Producto A - 2 x 100</div>
+                <DataTable :value="carrito" tableStyle="min-width: 50rem">
+                    <!-- <Column field="id" header="id"></Column> -->
+                    <Column field="nombre" header="Nombre"></Column>
+                    <Column field="cantidad" header="Cantidad"></Column>
+                    <Column field="precio_venta_actual" header="Precio"></Column>
+                    <Column :exportable="false" style="min-width: 12rem" header="Acciones">
+                        <template #body="slotProps">
+                            <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
+                                @click="eliminarProducto(slotProps.data)" />
+                        </template>
+                    </Column>
+                </DataTable>
 
             </div>
 
             <!-- 👤 CLIENTE -->
             <div class="bg-white rounded-lg p-3">
 
-                <h2 class="text-lg font-semibold mb-2">Cliente</h2>
+                <div class="flex justify-between items-center mb-2">
 
-                <input class="w-full border rounded p-2 mb-2" placeholder="Nombre" />
-                <input class="w-full border rounded p-2 mb-2" placeholder="CI / NIT" />
-                <input class="w-full border rounded p-2" placeholder="Teléfono" />
+                    <h2 class="text-lg font-semibold">Cliente</h2>
+
+                    <Button icon="pi pi-plus" label="Nuevo" size="small" @click="visibleCliente = true" />
+
+                </div>
+                <Dialog v-model:visible="visibleCliente" modal header="Nuevo Cliente" :style="{ width: '35rem' }">
+
+                    <div class="flex flex-col gap-3">
+
+                        <!-- razon social -->
+                        <div>
+                            <label class="block mb-1">Razón Social</label>
+
+                            <InputText v-model="clienteForm.razon_social" class="w-full" />
+                        </div>
+                        <!-- identificacion -->
+                        <div>
+                            <label class="block mb-1">CI / NIT</label>
+
+                            <InputText v-model="clienteForm.identificacion" class="w-full" />
+                        </div>
+                        <!-- telefono -->
+                        <div>
+                            <label class="block mb-1">Teléfono</label>
+                            <InputText v-model="clienteForm.telefono" class="w-full" />
+                        </div>
+                        <!-- direccion -->
+                        <div>
+                            <label class="block mb-1">Dirección</label>
+
+                            <InputText v-model="clienteForm.direccion" class="w-full" />
+                        </div>
+                        <!-- correo -->
+                        <div>
+                            <label class="block mb-1">Correo</label>
+
+                            <InputText v-model="clienteForm.correo" class="w-full" />
+                        </div>
+                    </div>
+                    <template #footer>
+                        <div class="flex justify-end gap-2">
+                            <Button label="Cancelar" severity="secondary" @click="visibleCliente = false" />
+                            <Button label="Guardar" icon="pi pi-save" @click="guardarCliente" />
+                        </div>
+                    </template>
+
+                </Dialog>
+                <DataTable :value="clientesFiltrados" tableStyle="min-width: 50rem">
+                    <Column field="id" header="id"></Column>
+                    <Column field="razon_social" header="Nombre"></Column>
+                    <Column field="telefono" header="Telefono"></Column>
+                    <!-- <Column field="precio_venta_actual" header="Precio"></Column> -->
+                    <Column :exportable="false" style="min-width: 12rem" header="Acciones">
+                        <template #body="slotProps">
+                            <Button icon="pi pi-trash" variant="outlined" rounded severity="danger"
+                                @click="eliminarProducto(slotProps.data)" />
+                        </template>
+                    </Column>
+                </DataTable>
 
             </div>
 
@@ -202,5 +357,7 @@ const productosFiltrados = computed(() => {
         </div>
 
     </div>
+
+    <pre>{{ JSON.stringify(carrito, null, 2) }}</pre>
 
 </template>
