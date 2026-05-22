@@ -16,6 +16,7 @@ import Sucursal from "../views/admin/Inventario/sucursal/Sucursal.vue";
 import Almacen from "../views/admin/Inventario/Almacen/Almacen.vue";
 import NotaVenta from "../views/admin/Notas/Venta/NotaVenta.vue";
 import NotaCompra from "../views/admin/Notas/Compra/NotaCompra.vue";
+import Movimientos from "../views/admin/Notas/Movimientos/Movimientos.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -84,7 +85,8 @@ const routes: Array<RouteRecordRaw> = [
                 path: "notas",
                 children: [
                     {path: 'nueva-venta', component: NotaVenta, name: "NotaVenta", meta: {requireAuth: true}},
-                    {path: 'nueva-compra', component: NotaCompra, name: "NotaCompra", meta: {requireAuth: true}}
+                    {path: 'nueva-compra', component: NotaCompra, name: "NotaCompra", meta: {requireAuth: true}},
+                    {path: 'movimientos', component: Movimientos, name: "Movimientos", meta: {requireAuth: true}}
                 ]
             }
         ]

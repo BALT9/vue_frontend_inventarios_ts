@@ -59,6 +59,11 @@ const model = ref([
                 icon: 'pi pi-fw pi-eye',
                 to: '/admin/notas/nueva-compra'
             },
+            {
+                label: 'Movimientos',
+                icon: 'pi pi-fw pi-eye',
+                to: '/admin/notas/movimientos'
+            },
         ]
     },
     {

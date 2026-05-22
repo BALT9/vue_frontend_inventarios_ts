@@ -9,6 +9,7 @@ import almacenService from '../../../../services/almacen.service';
 import clienteProveedorService from '../../../../services/cliente-proveedor.service';
 import { computed } from 'vue';
 import type { ClienteInterface } from '../../../../types/Cliente-ProovedorInterface';
+import notaService from '../../../../services/nota.service';
 
 
 const productos = ref<ProductoInterface[]>([]);
@@ -203,6 +204,66 @@ const total = computed(() => {
 
 });
 
+async function generarVenta() {
+    try {
+
+        if (!clienteSeleccionado.value) {
+            alert("Selecciona un cliente");
+            return;
+        }
+
+        if (carrito.value.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
+
+        const movimientos = carrito.value.map(item => {
+
+            const almacenSeleccionado = item.almacenes?.find((a: any) =>
+                a.almacen.id == filtroAlmacen.value
+            );
+
+            return {
+                producto_id: item.id,
+                almacen_id: filtroAlmacen.value || almacenSeleccionado?.almacen.id,
+                cantidad: item.cantidad,
+                tipo_movimiento: "salida",
+                precio_unitario_compra: item.precio_compra_actual ?? 0,
+                precio_unitario_venta: item.precio_venta_actual,
+                observaciones: ""
+            };
+        });
+
+        const user_id = localStorage.getItem("user_id");
+
+        const payload = {
+            fecha: new Date().toISOString().split("T")[0],
+            tipo_nota: "venta",
+            cliente_id: clienteSeleccionado.value.id,
+            user_id: user_id, // 👈 luego lo sacas del auth
+            estado_nota: "En Proceso",
+            observaciones: "",
+            movimientos
+        };
+
+        const res = await notaService.store(payload);
+
+        console.log("Venta creada:", res.data);
+
+        // limpiar estado
+        carrito.value = [];
+        clienteSeleccionado.value = null;
+
+        await listarProductos();
+
+        alert("Venta generada correctamente");
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al generar venta");
+    }
+}
+
 </script>
 
 <template>
@@ -250,6 +311,16 @@ const total = computed(() => {
                         <template #body="{ data }">
                             <img :src="getImageUrl(data.imagen)" alt="producto"
                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
+                        </template>
+                    </Column>
+                    <Column header="Stock">
+                        <template #body="{ data }">
+                            {{
+                                data.almacenes?.find((a: any) =>
+                                    a.almacen.id == filtroAlmacen
+                                )?.cantidad_actual
+                            ?? 0
+                            }}
                         </template>
                     </Column>
                     <Column :exportable="false" style="min-width: 12rem" header="Acciones">
@@ -383,7 +454,7 @@ const total = computed(() => {
                     <strong>{{ total.toFixed(2) }} Bs</strong>
                 </div>
 
-                <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
+                <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded" @click="generarVenta()">
                     Generar Pedido
                 </button>
 

@@ -25,6 +25,7 @@ onMounted(() => {
 async function obtenerPerfil() {
     const res = await getProfile();
     console.log("datos de perfil: ", res)
+    localStorage.setItem("user_id", res.id);
     perfil.value = res;
 }
 
