@@ -16,6 +16,13 @@ export default {
         return await api.get(`/nota?${params.toString()}`);
     },
 
+    async reportePDF(params?: any) {
+        return api.get('/nota/reporte/pdf', {
+            params,
+            responseType: 'blob'
+        });
+    },
+
     store(data: any) {
         return api.post("/nota", data);
     },

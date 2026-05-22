@@ -84,7 +84,28 @@ function resetFiltros() {
 }
 
 async function descargarFactura(notaId: number) {
-    
+
+}
+
+async function descargarReportePDF() {
+    try {
+        const response = await notaService.reportePDF();
+
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'reporte-notas.pdf');
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error al descargar reporte PDF:', error);
+    }
 }
 
 // ======================
@@ -118,7 +139,7 @@ onMounted(() => {
                 Reset
             </button>
 
-            <button class="bg-green-500 px-3 rounded" @click="">
+            <button class="bg-green-500 px-3 rounded" @click="descargarReportePDF()">
                 Generar Reporte
             </button>
 
