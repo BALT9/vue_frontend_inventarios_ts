@@ -5,6 +5,8 @@ import productoService from '../../../../services/producto.service';
 
 import { Column, DataTable, Dropdown } from 'primevue';
 
+import jsPDF from 'jspdf';
+
 // ======================
 // DATA
 // ======================
@@ -35,7 +37,8 @@ async function listarMovimientos() {
                 fecha: nota.fecha,
                 tipo_nota: nota.tipo_nota,
                 estado_nota: nota.estado_nota,
-                observaciones: nota.observaciones
+                observaciones: nota.observaciones,
+                cliente: nota.cliente // 👈 ESTO FALTABA
             },
             cliente: nota.cliente ?? null,
             user: nota.user ?? null
@@ -83,8 +86,19 @@ function resetFiltros() {
     filtroFecha.value = null;
 }
 
-async function descargarFactura(notaId: number) {
+function descargarFactura(nota: any) {
 
+    const totalItems = movimientos.value.filter(
+        m => m.nota?.id === nota.id
+    ).length;
+
+    const doc = new jsPDF();
+
+    doc.text(`FACTURA #${nota.id}`, 10, 10);
+    doc.text(`Cliente: ${nota.cliente?.razon_social ?? '-'}`, 10, 20);
+    doc.text(`Total items: ${totalItems}`, 10, 30);
+
+    doc.save(`factura-${nota.id}.pdf`);
 }
 
 async function descargarReportePDF() {
@@ -193,7 +207,7 @@ onMounted(() => {
             <Column header="Factura">
                 <template #body="{ data }">
                     <i class="pi pi-download text-blue-600 cursor-pointer hover:text-blue-800"
-                        @click="descargarFactura(data.nota?.id)" title="Descargar factura"></i>
+                        @click="descargarFactura(data.nota)" title="Descargar factura"></i>
                 </template>
             </Column>
 
